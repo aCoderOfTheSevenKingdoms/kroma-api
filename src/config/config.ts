@@ -12,9 +12,10 @@ type Config = {
   readonly GOOGLE_CLIENT_ID: string;
   readonly GOOGLE_CLIENT_SECRET: string;
   readonly API_BASE_URL: string;
+  readonly CLIENT_BASE_URL: string;
 }
 
-const env = requireEnvVars(["MONGO_URI", "JWT_SECRET", "GOOGLE_USER", "GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET", "GOOGLE_REFRESH_TOKEN", "API_BASE_URL"]);
+const env = requireEnvVars(["MONGO_URI", "JWT_SECRET", "GOOGLE_USER", "GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET", "GOOGLE_REFRESH_TOKEN", "API_BASE_URL", "CLIENT_BASE_URL"]);
 
 export const config: Config =  {
     MONGO_URI: env.MONGO_URI,
@@ -24,5 +25,6 @@ export const config: Config =  {
     GOOGLE_REFRESH_TOKEN: env.GOOGLE_REFRESH_TOKEN,
     GOOGLE_CLIENT_ID: env.GOOGLE_CLIENT_ID,
     GOOGLE_CLIENT_SECRET: env.GOOGLE_CLIENT_SECRET,
-    API_BASE_URL: env.API_BASE_URL
+    API_BASE_URL: env.API_BASE_URL,
+    CLIENT_BASE_URL: env.CLIENT_BASE_URL
 }
