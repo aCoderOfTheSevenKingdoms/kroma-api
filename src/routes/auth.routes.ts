@@ -1,7 +1,7 @@
 import {Router, type Request, type Response} from "express";
 import { validateUserRegistration, validateUserLogin, validateEmailVerification } from "../validator/auth.validator.js";
 import { registerUser, loginUser, verifyEmail } from "../controllers/auth.controller.js";
-import passport, { authenticate } from "passport";
+import passport from "passport";
 import jwt from "jsonwebtoken";
 import { config } from "../config/config.js";
 

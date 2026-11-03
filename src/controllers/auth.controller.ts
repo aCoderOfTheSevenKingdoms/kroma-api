@@ -15,7 +15,7 @@ type RegisterBody = {
     password: string;
     contact: string;
     fullname: string;
-    user_type: "buyer" | "seller";
+    isSeller: boolean;
 };
 
 type LoginBody = {
@@ -28,7 +28,7 @@ function toPublicUser(user: {
     email: string;
     contact: string;
     fullname: string;
-    user_type: string;
+    user_type: string
 }) {
     return {
         id: String(user._id),
@@ -56,7 +56,7 @@ function setAuthTokenCookie(res: Response, user: { _id: unknown; user_type: stri
 
 export async function registerUser(req: Request, res: Response) {
     try {
-        const { email, password, contact, fullname, user_type } = req.body as RegisterBody;
+        const { email, password, contact, fullname, isSeller } = req.body as RegisterBody;
         const normalizedEmail = email.trim().toLowerCase();
 
         let user = null; 
@@ -74,7 +74,7 @@ export async function registerUser(req: Request, res: Response) {
                 password: hashedPassword,
                 contact,
                 fullname,
-                user_type
+                user_type: isSeller ? "seller" : "buyer"
             });
         }
 
