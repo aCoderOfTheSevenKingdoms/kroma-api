@@ -5,6 +5,7 @@ import userModel from "../models/user.model.js";
 import { config } from "../config/config.js";
 import { sendEmail } from "../services/mail.service.js";
 import { verifyEmailTemplate } from "../templates/verifyEmail.template.js";
+import type { AuthenticatedRequest } from "../middleware/auth.middleware.js";
 
 const SALT_ROUNDS = 10;
 const TOKEN_EXPIRY = "7d";
@@ -26,16 +27,16 @@ type LoginBody = {
 function toPublicUser(user: {
     _id: unknown;
     email: string;
-    contact: string;
+    contact?: string | null;
     fullname: string;
-    user_type: string
+    user_type?: string | null
 }) {
     return {
         id: String(user._id),
         email: user.email,
-        contact: user.contact,
+        contact: user.contact ?? "",
         fullname: user.fullname,
-        user_type: user.user_type
+        user_type: user.user_type ?? "buyer"
     };
 }
 
@@ -85,11 +86,11 @@ export async function registerUser(req: Request, res: Response) {
 
         const verificationLink = `${config.API_BASE_URL}/api/auth/verify-email?token=${emailVerificationToken}`;
 
-        await sendEmail({
-            to: user.email,
-            subject: "Verify your account on Kroma",
-            html: verifyEmailTemplate({username: user.fullname || "there", verificationLink})
-        });
+        // await sendEmail({
+        //     to: user.email,
+        //     subject: "Verify your account on Kroma",
+        //     html: verifyEmailTemplate({username: user.fullname || "there", verificationLink})
+        // });
 
         return res.status(201).json({
             message: "User registered successfully",
@@ -120,8 +121,12 @@ export async function loginUser(req: Request, res: Response) {
             return res.status(401).json({ error: "Invalid email or password" });
         }
 
-        if(!user.is_verified) {
-            return res.status(401).json({error: "Email not verified"})
+        // if(!user.is_verified) {
+        //     return res.status(401).json({error: "Email not verified"})
+        // }
+
+        if (!user.password) {
+            return res.status(401).json({ error: "Invalid email or password" });
         }
 
         const isPasswordValid = await bcrypt.compare(password, user.password);
@@ -138,6 +143,22 @@ export async function loginUser(req: Request, res: Response) {
     } catch (error: unknown) {
         console.error("Login error:", error);
         return res.status(500).json({ error: "Something went wrong while logging in" });
+    }
+}
+
+export async function getCurrentUser(req: Request, res: Response) {
+    try {
+        const { userId } = req as AuthenticatedRequest;
+
+        const user = await userModel.findById(userId);
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        return res.status(200).json({ user: toPublicUser(user) });
+    } catch (error: unknown) {
+        console.error("Get current user error:", error);
+        return res.status(500).json({ error: "Something went wrong while fetching the user" });
     }
 }
 

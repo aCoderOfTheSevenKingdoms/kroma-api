@@ -1,9 +1,13 @@
 import mongoose from "mongoose";
 
+function isLocalAccount(this: { google_id?: string }) {
+   return !this.google_id;
+}
+
 const userSchema = new mongoose.Schema({
    email: {type: String, required: true, unique: true},
-   contact: {type: String, required: true},
-   password: {type: String, required: true, select: false},
+   contact: {type: String, required: isLocalAccount},
+   password: {type: String, required: isLocalAccount, select: false},
    fullname: {type: String, required: true},
    is_verified: {type: Boolean, default: false},
    google_id: { type: String, unique: true, sparse: true },

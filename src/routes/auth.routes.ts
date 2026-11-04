@@ -1,6 +1,7 @@
 import {Router, type Request, type Response} from "express";
 import { validateUserRegistration, validateUserLogin, validateEmailVerification } from "../validator/auth.validator.js";
-import { registerUser, loginUser, verifyEmail } from "../controllers/auth.controller.js";
+import { registerUser, loginUser, verifyEmail, getCurrentUser } from "../controllers/auth.controller.js";
+import { requireAuth } from "../middleware/auth.middleware.js";
 import passport from "passport";
 import jwt from "jsonwebtoken";
 import { config } from "../config/config.js";
@@ -10,6 +11,7 @@ const router = Router();
 router.post('/register', validateUserRegistration, registerUser);
 router.post('/login', validateUserLogin, loginUser);
 router.get('/verify-email', validateEmailVerification, verifyEmail);
+router.get('/me', requireAuth, getCurrentUser);
 
 // ============  GOOGLE OAUTH 2.0 ===============
 
@@ -30,7 +32,7 @@ router.get("/google/callback",
         }
 
         const token = jwt.sign(
-            {userId: user._id, email: user.email, user_type: user.user_type},
+            {id: String(user._id), user_type: user.user_type},
             config.JWT_SECRET,
             {expiresIn: "7d"}
         );

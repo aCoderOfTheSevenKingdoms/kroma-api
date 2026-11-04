@@ -1,26 +1,34 @@
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import userModel from "../models/user.model.js";
+import { config } from "./config.js";
 
 passport.use(
   new GoogleStrategy(
     {
       clientID: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-      callbackURL: "/api/auth/google/callback", // Matches your route setup
+      callbackURL: `${config.API_BASE_URL}/api/auth/google/callback`,
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
-        const email = profile.emails?.[0]?.value;
+        const email = profile.emails?.[0]?.value?.trim().toLowerCase();
         
         if (!email) {
           return done(new Error("No email found in Google profile"), undefined);
         }
 
-        let user = await userModel.findOne({ 
-          google_id: profile.id, 
-          email: email 
-        });
+        let user = await userModel.findOne({ google_id: profile.id });
+
+        if (!user) {
+          user = await userModel.findOne({ email: email });
+
+          if (user && !user.google_id) {
+            user.google_id = profile.id;
+            user.is_verified = true;
+            await user.save();
+          }
+        }
 
         if (!user) {
           user = await userModel.create({
