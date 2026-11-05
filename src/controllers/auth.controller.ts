@@ -162,6 +162,21 @@ export async function getCurrentUser(req: Request, res: Response) {
     }
 }
 
+export async function logoutUser(req: Request, res: Response) {
+    try {
+        res.clearCookie("token", {
+            httpOnly: true,
+            sameSite: "lax",
+            secure: config.NODE_ENV === "production"
+        });
+
+        return res.status(200).json({ message: "Logged out successfully" });
+    } catch (error: unknown) {
+        console.error("Logout error:", error);
+        return res.status(500).json({ error: "Something went wrong while logging out" });
+    }
+}
+
 export async function verifyEmail(req: Request, res: Response) {
     try {
         const token = req.query.token;

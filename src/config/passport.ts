@@ -6,9 +6,9 @@ import { config } from "./config.js";
 passport.use(
   new GoogleStrategy(
     {
-      clientID: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-      callbackURL: `${config.API_BASE_URL}/api/auth/google/callback`,
+      clientID: config.GOOGLE_OAUTH_CLIENT_ID,
+      clientSecret: config.GOOGLE_OAUTH_CLIENT_SECRET,
+      callbackURL: config.GOOGLE_OAUTH_CALLBACK_URL,
     },
     async (accessToken, refreshToken, profile, done) => {
       try {

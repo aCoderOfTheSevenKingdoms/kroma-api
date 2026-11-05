@@ -1,6 +1,6 @@
 import {Router, type Request, type Response} from "express";
 import { validateUserRegistration, validateUserLogin, validateEmailVerification } from "../validator/auth.validator.js";
-import { registerUser, loginUser, verifyEmail, getCurrentUser } from "../controllers/auth.controller.js";
+import { registerUser, loginUser, verifyEmail, getCurrentUser, logoutUser } from "../controllers/auth.controller.js";
 import { requireAuth } from "../middleware/auth.middleware.js";
 import passport from "passport";
 import jwt from "jsonwebtoken";
@@ -12,6 +12,7 @@ router.post('/register', validateUserRegistration, registerUser);
 router.post('/login', validateUserLogin, loginUser);
 router.get('/verify-email', validateEmailVerification, verifyEmail);
 router.get('/me', requireAuth, getCurrentUser);
+router.post('/logout', logoutUser);
 
 // ============  GOOGLE OAUTH 2.0 ===============
 
