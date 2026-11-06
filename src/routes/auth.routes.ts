@@ -22,14 +22,10 @@ router.get('/google',
 
 router.get("/google/callback", 
     passport.authenticate("google", {
-        failureRedirect: `${config.CLIENT_BASE_URL}/google-auth-failure`,
+        failureRedirect: `${config.CLIENT_BASE_URL}/login`,
         session: false
     }),
     googleAuthCallback
 );
-
-router.get("/error", (req: Request, res: Response) => {
-    res.status(401).json({message: "Google Authentication Failed"});
-});
 
 export default router;
