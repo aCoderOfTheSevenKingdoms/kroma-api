@@ -24,6 +24,13 @@ type LoginBody = {
     password: string;
 };
 
+type GoogleAuthUser = {
+    _id: unknown;
+    email: string;
+    fullname: string;
+    user_type: string;
+};
+
 function toPublicUser(user: {
     _id: unknown;
     email: string;
@@ -216,5 +223,25 @@ export async function verifyEmail(req: Request, res: Response) {
 
         console.error("Verify email error:", error);
         return res.status(500).json({ error: "Something went wrong while verifying the email" });
+    }
+}
+
+export async function googleAuthCallback(req: Request, res: Response) {
+    try {
+        const user = req.user as GoogleAuthUser | undefined;
+
+        if (!user) {
+            return res.status(401).json({ error: "Google authentication failed: No user found" });
+        }
+
+        setAuthTokenCookie(res, user);
+
+        return res.status(200).json({
+            message: "Logged in successfully",
+            user: toPublicUser(user)
+        });
+    } catch (error: unknown) {
+        console.error("Google auth callback error:", error);
+        return res.status(500).json({ error: "Something went wrong while signing in with Google" });
     }
 }
