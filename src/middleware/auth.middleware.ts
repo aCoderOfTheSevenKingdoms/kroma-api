@@ -43,3 +43,17 @@ export function requireAuth(req: Request, res: Response, next: NextFunction) {
         return res.status(401).json({ error: "Invalid or expired session" });
     }
 }
+
+export function requireSeller(req: Request, res: Response, next: NextFunction) {
+    const authenticatedReq = req as AuthenticatedRequest;
+
+    if (!authenticatedReq.userId) {
+        return res.status(401).json({ error: "Not authenticated" });
+    }
+
+    if (authenticatedReq.userType !== "seller") {
+        return res.status(403).json({ error: "Seller access required" });
+    }
+
+    next();
+}

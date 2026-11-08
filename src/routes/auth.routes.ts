@@ -3,7 +3,6 @@ import { validateUserRegistration, validateUserLogin, validateEmailVerification 
 import { registerUser, loginUser, verifyEmail, getCurrentUser, logoutUser, googleAuthCallback } from "../controllers/auth.controller.js";
 import { requireAuth } from "../middleware/auth.middleware.js";
 import passport from "passport";
-import jwt from "jsonwebtoken";
 import { config } from "../config/config.js";
 
 const router = Router();
