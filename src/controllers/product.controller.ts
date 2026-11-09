@@ -82,3 +82,18 @@ export async function createProduct(req: Request, res: Response) {
         return res.status(500).json({ error: "Something went wrong while creating the product" });
     }
 }
+
+export async function getProductsForSeller(req: Request, res: Response) {
+    try {
+        const {userId} = req as AuthenticatedRequest;
+        const products = await productModel.find({seller: userId});  
+        res.status(200).json({
+            message: "Products fetched successfully",
+            success: true,
+            products
+        }) 
+    } catch(error) {
+        console.error("Fetch products error", error);
+        return res.status(500).json({error: "Something went wrong while fetching products"});
+    }
+} 

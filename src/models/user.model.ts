@@ -1,10 +1,20 @@
 import mongoose from "mongoose";
 
+export interface IUser {
+   email: string;
+   contact: string;
+   password: string;
+   fullname: string;
+   is_verified: boolean;
+   google_id: string;
+   user_type: string;
+}
+
 function isLocalAccount(this: { google_id?: string }) {
    return !this.google_id;
 }
 
-const userSchema = new mongoose.Schema({
+const userSchema = new mongoose.Schema<IUser>({
    email: {type: String, required: true, unique: true},
    contact: {type: String, required: isLocalAccount},
    password: {type: String, required: isLocalAccount, select: false},
